@@ -1,0 +1,93 @@
+import tkinter as tk
+from tkinter import messagebox
+import random
+
+# Game logic
+def play_game(user_choice):
+    options = ["Rock", "Paper", "Scissors"]
+    computer_choice = random.choice(options)
+
+    # Determine the result
+    if user_choice == computer_choice:
+        result = "It's a Tie!"
+    elif (user_choice == "Rock" and computer_choice == "Scissors") or \
+         (user_choice == "Paper" and computer_choice == "Rock") or \
+         (user_choice == "Scissors" and computer_choice == "Paper"):
+        result = "You Win!"
+        global user_score
+        user_score += 1
+    else:
+        result = "You Lose!"
+        global computer_score
+        computer_score += 1
+
+    # Display choices and result
+    label_user_choice.config(text=f"Your Choice: {user_choice}")
+    label_computer_choice.config(text=f"Computer's Choice: {computer_choice}")
+    label_result.config(text=f"Result: {result}")
+    label_score.config(text=f"Score - You: {user_score} | Computer: {computer_score}")
+
+# Reset the game
+def reset_game():
+    global user_score, computer_score
+    user_score = 0
+    computer_score = 0
+    label_user_choice.config(text="Your Choice: ")
+    label_computer_choice.config(text="Computer's Choice: ")
+    label_result.config(text="Result: ")
+    label_score.config(text="Score - You: 0 | Computer: 0")
+    messagebox.showinfo("Reset", "Scores have been reset!")
+
+# Exit the game
+def exit_game():
+    root.destroy()
+
+# Initialize scores
+user_score = 0
+computer_score = 0
+
+# Create the main window
+root = tk.Tk()
+root.title("Rock, Paper, Scissors Game")
+root.geometry("400x400")
+root.resizable(False, False)
+
+# Heading
+label_heading = tk.Label(root, text="Rock, Paper, Scissors", font=("Arial", 18, "bold"))
+label_heading.pack(pady=10)
+
+# Choices Buttons
+frame_buttons = tk.Frame(root)
+frame_buttons.pack(pady=10)
+
+button_rock = tk.Button(frame_buttons, text="Rock", font=("Arial", 12), width=10, command=lambda: play_game("Rock"))
+button_rock.grid(row=0, column=0, padx=5)
+button_paper = tk.Button(frame_buttons, text="Paper", font=("Arial", 12), width=10, command=lambda: play_game("Paper"))
+button_paper.grid(row=0, column=1, padx=5)
+button_scissors = tk.Button(frame_buttons, text="Scissors", font=("Arial", 12), width=10, command=lambda: play_game("Scissors"))
+button_scissors.grid(row=0, column=2, padx=5)
+
+# Labels to display choices and results
+label_user_choice = tk.Label(root, text="Your Choice: ", font=("Arial", 12))
+label_user_choice.pack(pady=5)
+label_computer_choice = tk.Label(root, text="Computer's Choice: ", font=("Arial", 12))
+label_computer_choice.pack(pady=5)
+label_result = tk.Label(root, text="Result: ", font=("Arial", 14, "bold"))
+label_result.pack(pady=10)
+
+# Score tracking
+label_score = tk.Label(root, text="Score - You: 0 | Computer: 0", font=("Arial", 12))
+label_score.pack(pady=10)
+
+# Control buttons
+frame_controls = tk.Frame(root)
+frame_controls.pack(pady=10)
+
+button_reset = tk.Button(frame_controls, text="Reset", font=("Arial", 12), width=10, command=reset_game)
+button_reset.grid(row=0, column=0, padx=5)
+button_exit = tk.Button(frame_controls, text="Exit", font=("Arial", 12), width=10, command=exit_game)
+button_exit.grid(row=0, column=1, padx=5)
+
+# Run the application
+root.mainloop()
+
