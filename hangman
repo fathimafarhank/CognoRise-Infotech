@@ -1,0 +1,127 @@
+import tkinter as tk
+import random
+from tkinter import messagebox
+
+# Word List with Hints
+word_list_with_hints = [
+    ("PYTHON", "It's a popular programming language."),
+    ("TIGER", "It's a wild animal."),
+    ("DEVELOPER", "A profession in tech."),
+    ("CODING", "The process of writing computer programs."),
+    ("PROGRAMMING", "Another term for coding."),
+    ("ALGORITHM", "Step-by-step instructions for solving a problem."),
+    ("DEBUGGING", "Fixing errors in code."),
+]
+
+# Select a random word with its clue
+def select_random_word():
+    return random.choice(word_list_with_hints)
+
+# Start a new game
+def start_new_game():
+    global selected_word, displayed_word, guessed_letters, incorrect_guesses, max_incorrect_guesses, clue
+    selected_word, clue = select_random_word()
+    displayed_word = ["_" for _ in selected_word]
+    guessed_letters = set()
+    incorrect_guesses = 0
+    max_incorrect_guesses = len(hangman_parts)
+    update_ui()
+
+# Update the UI
+def update_ui():
+    word_label.config(text=" ".join(displayed_word))
+    guesses_label.config(text=f"Guessed Letters: {', '.join(sorted(guessed_letters))}")
+    hangman_label.config(text="\n".join(hangman_parts[:incorrect_guesses]))
+    clue_label.config(text=f"Hint: {clue}")
+
+    # Check win condition
+    if "_" not in displayed_word:
+        messagebox.showinfo("Congratulations!", "You guessed the word! You Win!")
+        start_new_game()
+
+    # Check loss condition
+    elif incorrect_guesses >= max_incorrect_guesses:
+        messagebox.showinfo("Game Over", f"You've been hanged! The word was: {selected_word}")
+        start_new_game()
+
+# Process user's guess
+def process_guess():
+    global incorrect_guesses
+    guess = entry_guess.get().upper().strip()
+    entry_guess.delete(0, tk.END)
+
+    # Validate guess
+    if len(guess) != 1 or not guess.isalpha():
+        messagebox.showwarning("Invalid Input", "Please enter a single letter.")
+        return
+
+    if guess in guessed_letters:
+        messagebox.showwarning("Already Guessed", f"You've already guessed '{guess}'.")
+        return
+
+    guessed_letters.add(guess)
+
+    # Check if the guessed letter is in the word
+    if guess in selected_word:
+        for idx, letter in enumerate(selected_word):
+            if letter == guess:
+                displayed_word[idx] = guess
+    else:
+        incorrect_guesses += 1
+
+    update_ui()
+
+# Create GUI window
+root = tk.Tk()
+root.title("Hangman Game with Hints")
+root.geometry("400x500")
+root.resizable(False, False)
+
+# Hangman parts
+hangman_parts = [
+    " O ",  # Head
+    " | ",  # Body
+    "/|\\", # Arms
+    " | ",  # Body again
+    "/ \\", # Legs
+]
+
+# Title Label
+title_label = tk.Label(root, text="Hangman Game", font=("Arial", 20, "bold"))
+title_label.pack(pady=10)
+
+# Word Display
+word_label = tk.Label(root, text="", font=("Arial", 18))
+word_label.pack(pady=20)
+
+# Hint Display
+clue_label = tk.Label(root, text="", font=("Arial", 12, "italic"), fg="blue")
+clue_label.pack(pady=10)
+
+# Hangman Display
+hangman_label = tk.Label(root, text="", font=("Courier", 14), fg="red", justify="center")
+hangman_label.pack(pady=10)
+
+# Guess Input
+frame_entry = tk.Frame(root)
+frame_entry.pack(pady=20)
+entry_guess = tk.Entry(frame_entry, font=("Arial", 14), width=5)
+entry_guess.grid(row=0, column=0, padx=10)
+button_guess = tk.Button(frame_entry, text="Guess", font=("Arial", 14), command=process_guess)
+button_guess.grid(row=0, column=1)
+
+# Guessed Letters Display
+guesses_label = tk.Label(root, text="Guessed Letters: ", font=("Arial", 12))
+guesses_label.pack(pady=10)
+
+# New Game Button
+button_new_game = tk.Button(root, text="New Game", font=("Arial", 14), command=start_new_game)
+button_new_game.pack(pady=20)
+
+# Start the first game
+start_new_game()
+
+# Run the application
+root.mainloop()
+
+
