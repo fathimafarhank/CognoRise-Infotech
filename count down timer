@@ -1,0 +1,90 @@
+import tkinter as tk
+from tkinter import messagebox
+import time
+
+# Function to start the countdown
+def start_countdown():
+    try:
+        # Get the countdown time in seconds from the input fields
+        minutes = int(entry_minutes.get())
+        seconds = int(entry_seconds.get())
+        
+        # Validate inputs
+        if minutes < 0 or seconds < 0 or seconds >= 60:
+            raise ValueError("Please enter valid time values. Minutes and seconds should be positive, and seconds must be less than 60.")
+
+        total_seconds = minutes * 60 + seconds  # Convert the time to total seconds
+
+        # Disable the input fields while countdown is running
+        entry_minutes.config(state=tk.DISABLED)
+        entry_seconds.config(state=tk.DISABLED)
+        start_button.config(state=tk.DISABLED)
+        stop_button.config(state=tk.NORMAL)
+
+        # Countdown logic
+        while total_seconds > 0:
+            mins, secs = divmod(total_seconds, 60)
+            time_str = f"{mins:02d}:{secs:02d}"
+            label_time.config(text=time_str)
+            root.update()  # Update the GUI
+            time.sleep(1)
+            total_seconds -= 1
+
+        # When the countdown finishes, show a message box
+        label_time.config(text="00:00")
+        messagebox.showinfo("Time's up!", "The countdown has ended!")
+
+    except ValueError as e:
+        messagebox.showerror("Invalid Input", str(e))
+
+    # Enable input fields after the countdown is over
+    entry_minutes.config(state=tk.NORMAL)
+    entry_seconds.config(state=tk.NORMAL)
+    start_button.config(state=tk.NORMAL)
+
+# Function to stop the countdown
+def stop_countdown():
+    label_time.config(text="00:00")
+    entry_minutes.config(state=tk.NORMAL)
+    entry_seconds.config(state=tk.NORMAL)
+    start_button.config(state=tk.NORMAL)
+    stop_button.config(state=tk.DISABLED)
+
+# Create the GUI window
+root = tk.Tk()
+root.title("Countdown Timer")
+root.geometry("300x700")
+root.resizable(False, False)
+
+# Title label
+title_label = tk.Label(root, text="Countdown Timer", font=("Arial", 20, "bold"))
+title_label.pack(pady=10)
+
+# Time entry frames
+frame_minutes = tk.Frame(root)
+frame_minutes.pack(pady=5)
+label_minutes = tk.Label(frame_minutes, text="Minutes:", font=("Arial", 12))
+label_minutes.grid(row=0, column=0, padx=10)
+entry_minutes = tk.Entry(frame_minutes, font=("Arial", 12), width=5)
+entry_minutes.grid(row=0, column=1)
+
+frame_seconds = tk.Frame(root)
+frame_seconds.pack(pady=5)
+label_seconds = tk.Label(frame_seconds, text="Seconds:", font=("Arial", 12))
+label_seconds.grid(row=0, column=0, padx=10)
+entry_seconds = tk.Entry(frame_seconds, font=("Arial", 12), width=5)
+entry_seconds.grid(row=0, column=1)
+
+# Countdown display
+label_time = tk.Label(root, text="00:00", font=("Arial", 30, "bold"), fg="green")
+label_time.pack(pady=20)
+
+# Buttons for start and stop
+start_button = tk.Button(root, text="Start", font=("Arial", 12), command=start_countdown)
+start_button.pack(side=tk.LEFT, padx=20, pady=10)
+
+stop_button = tk.Button(root, text="Stop", font=("Arial", 12), command=stop_countdown, state=tk.DISABLED)
+stop_button.pack(side=tk.RIGHT, padx=20, pady=10)
+
+# Run the application
+root.mainloop()
